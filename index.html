@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise B2B Lead Intake | n8n AI Pipeline Demo</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .card { background: #1e293b; padding: 32px; border-radius: 12px; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #334155; }
+    h2 { margin-top: 0; color: #38bdf8; font-size: 22px; margin-bottom: 6px; }
+    p.subtitle { margin-top: 0; font-size: 13px; color: #94a3b8; margin-bottom: 18px; }
+    .presets { display: flex; gap: 8px; margin-bottom: 18px; }
+    .preset-btn { flex: 1; padding: 8px; font-size: 12px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .preset-btn:hover { background: #334155; }
+    label { display: block; margin-top: 12px; font-size: 13px; color: #94a3b8; font-weight: 600; }
+    input, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; font-size: 14px; }
+    button.submit-btn { margin-top: 22px; width: 100%; padding: 12px; background: #ea580c; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+    button.submit-btn:hover { background: #c2410c; }
+    #status { margin-top: 15px; font-size: 13px; text-align: center; padding: 10px; border-radius: 6px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🚀 Enterprise Lead Intake</h2>
+    <p class="subtitle">Connected to Local n8n AI Qualification Pipeline</p>
+
+    <div class="presets">
+      <button type="button" class="preset-btn" onclick="fillPreset('hot')">🔥 Fill Hot Lead</button>
+      <button type="button" class="preset-btn" onclick="fillPreset('warm')">🌤️ Fill Warm Lead</button>
+      <button type="button" class="preset-btn" onclick="fillPreset('cold')">❄️ Fill Cold/Spam</button>
+    </div>
+
+    <form id="leadForm">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Sarah Jenkins" required>
+
+      <label>Work Email</label>
+      <input type="email" id="email" placeholder="sarah@stripe.com" required>
+
+      <label>Company Name</label>
+      <input type="text" id="company" placeholder="Stripe" required>
+
+      <label>Company Website</label>
+      <input type="url" id="website" placeholder="https://stripe.com" required>
+
+      <label>How can we help?</label>
+      <textarea id="message" rows="4" placeholder="We process 500 enterprise leads a week..." required></textarea>
+
+      <button type="submit" class="submit-btn">Submit Lead to n8n Webhook</button>
+      <div id="status"></div>
+    </form>
+  </div>
+
+  <script>
+    function fillPreset(type) {
+      if (type === 'hot') {
+        document.getElementById('name').value = "Sarah Jenkins";
+        document.getElementById('email').value = "sarah@stripe.com";
+        document.getElementById('company').value = "Stripe";
+        document.getElementById('website').value = "https://stripe.com";
+        document.getElementById('message').value = "We process 500 enterprise leads a week and need to automate our CRM routing urgently. Budget is $5k.";
+      } else if (type === 'warm') {
+        document.getElementById('name').value = "Marcus Vance";
+        document.getElementById('email').value = "marcus@zendesk.com";
+        document.getElementById('company').value = "Zendesk";
+        document.getElementById('website').value = "https://zendesk.com";
+        document.getElementById('message').value = "Hello, we are reviewing our internal tooling stack for next Q2. We might need some assistance with CRM integrations down the line. Would like to keep in touch.";
+      } else if (type === 'cold') {
+        document.getElementById('name').value = "John Doe";
+        document.getElementById('email').value = "johndoe123@gmail.com";
+        document.getElementById('company').value = "QuickRank SEO";
+        document.getElementById('website').value = "https://example.com";
+        document.getElementById('message').value = "Hello sir I am selling cheap SEO backlinks and crypto marketing services for $19 please buy now.";
+      }
+    }
+
+    document.getElementById('leadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('status');
+      status.style.display = 'block';
+      status.style.background = '#1e3a8a';
+      status.style.color = '#bfdbfe';
+      status.textContent = "⏳ Sending payload to n8n webhook...";
+
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        company: document.getElementById('company').value,
+        website: document.getElementById('website').value,
+        message: document.getElementById('message').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:5678/webhook-test/inbound-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          status.style.background = '#14532d';
+          status.style.color = '#bbf7d0';
+          status.textContent = "✅ Lead submitted! Check your n8n canvas.";
+        } else {
+          status.style.background = '#7f1d1d';
+          status.style.color = '#fecaca';
+          status.textContent = "❌ Error " + res.status + ": Did you click 'Execute workflow' in n8n first?";
+        }
+      } catch (err) {
+        status.style.background = '#14532d';
+        status.style.color = '#bbf7d0';
+        status.textContent = "✅ Request dispatched! Check your n8n canvas to watch it run.";
+      }
+    });
+  </script>
+</body>
+</html>

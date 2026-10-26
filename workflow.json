@@ -1,0 +1,2505 @@
+{
+  "name": "Enterprise Lead Qualification Pipeline - Kingsley Pius",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inbound-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        2912,
+        -1504
+      ],
+      "id": "df6be8a1-bb3c-4e38-b605-1ab46a9c15a5",
+      "name": "Tigger- leads submission - Webhook",
+      "webhookId": "537a2742-7242-4c3c-8019-c05d1e6f3a04"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Grab the incoming data from the Webhook's 'body' folder\nconst lead = $input.first().json.body;\n\n// 2. Clean the email (remove accidental spaces and make it lowercase)\nconst cleanEmail = (lead.email || \"\").trim().toLowerCase();\n\n// 3. Extract the domain (everything after the '@' symbol)\nconst domain = cleanEmail.split('@')[1] || \"\";\n\n// 4. List of free personal email providers we should NOT scrape\nconst freeProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];\nconst isBusinessEmail = domain !== \"\" && !freeProviders.includes(domain);\n\n// 5. Output clean, structured data for the rest of our pipeline\nreturn [\n  {\n    json: {\n      name: (lead.name || \"Unknown\").trim(),\n      email: cleanEmail,\n      company: (lead.company || \"Unknown\").trim(),\n      message: (lead.message || \"\").trim(),\n      domain: domain,\n      is_business_email: isBusinessEmail,\n      website_url: isBusinessEmail ? `https://${domain}` : null,\n      received_at: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        -1136
+      ],
+      "id": "6571709d-0f48-410d-8bc7-efaeb3bd387f",
+      "name": "Code in JavaScript - Clean up codes, extracts Json data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d7c524d4-84b4-4566-b813-3193a9851878",
+              "name": "=Customer_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "5c603a06-f1c1-4694-a26a-5edd8522dd6a",
+              "name": "=Customer_email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "ba96dc9a-7ee5-4a66-96bb-620a398d0ef2",
+              "name": "=Customer_company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "5c42e297-0f60-49f8-b654-f495260cac95",
+              "name": "=Customer_message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "0c1a60da-231a-403a-b750-97e67813e2ad",
+              "name": "=Company_domain_name",
+              "value": "={{ $json.domain }}",
+              "type": "string"
+            },
+            {
+              "id": "28487076-ca75-439f-bdb5-bd26a68b6410",
+              "name": "=is_business_email",
+              "value": "={{ $json.is_business_email }}",
+              "type": "boolean"
+            },
+            {
+              "id": "baa79779-18af-4860-ba19-9d632fb0c362",
+              "name": "=Company_website_url",
+              "value": "={{ $json.website_url }}",
+              "type": "string"
+            },
+            {
+              "id": "66b74f10-da10-46f6-824d-3fe1270572e2",
+              "name": "=Received_time",
+              "value": "={{ $json.received_at }}",
+              "type": "string"
+            },
+            {
+              "id": "c20e38e7-68ea-402d-bc3b-e0960c0e7dac",
+              "name": "Status",
+              "value": "Waiting AI Review",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2800,
+        -1136
+      ],
+      "id": "68f59d0e-6401-4559-b5b3-3479211a039e",
+      "name": "Re organise and properly structure data -   Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "is_business_email": true,
+            "Customer_name": "={{ $json.Customer_name }}",
+            "Customer_email": "={{ $json.Customer_email }}",
+            "Customer_company": "={{ $json.Customer_company }}",
+            "Customer_message": "={{ $json.Customer_message }}",
+            "Company_domain_name": "={{ $json.Company_domain_name }}",
+            "Company_website_url": "={{ $json.Company_website_url }}",
+            "Received_time": "={{ $json.Received_time }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        3024,
+        -1136
+      ],
+      "id": "081cb6cd-4130-4a4c-8a65-b98ff3aedc3b",
+      "name": "Database for incoming Leads - Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5a008942-97d3-4bc2-9cc9-0d0684272ae8",
+              "leftValue": "={{ $json.fields.is_business_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3248,
+        -1136
+      ],
+      "id": "d67166cc-6063-4037-8337-9e11369d7c73",
+      "name": "Check if it's business or personal email -  If"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.fields.Company_website_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3792,
+        -1424
+      ],
+      "id": "18b875bb-b128-4b60-b6b4-9c37df7f3d37",
+      "name": "Get information from company webpage - HTTP Request",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50b220f9-3c8c-416c-8601-5441a6dada21",
+              "name": "airtable_id",
+              "value": "={{ $('Database for incoming Leads - Create a record').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "bd2e8c97-25f4-41f7-8476-7c4a0956076e",
+              "name": "Customer_email",
+              "value": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Customer_email }}",
+              "type": "string"
+            },
+            {
+              "id": "3bda1af1-8ea3-4743-8f5d-43d7d66ac9ed",
+              "name": "Customer_company",
+              "value": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Customer_company }}",
+              "type": "string"
+            },
+            {
+              "id": "fd5bdd20-e6c0-4387-90bb-9086f342047f",
+              "name": "Customer_message",
+              "value": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Customer_message }}",
+              "type": "string"
+            },
+            {
+              "id": "82745b56-cc30-46fd-be8f-e8de04cba1e4",
+              "name": "fields.Company_website_url",
+              "value": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Company_website_url }}",
+              "type": "string"
+            },
+            {
+              "id": "a6968c46-f791-473a-b9b9-119dd4dd98d2",
+              "name": "company_summary",
+              "value": "Personal email address used — no company website scraped.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        3728,
+        -864
+      ],
+      "id": "4dd357a4-be64-4238-aa8f-acd85d604a5d",
+      "name": "Fallback if (No Website available) Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "=You are an Enterprise B2B Revenue Operations AI. Analyze the incoming lead below alongside their scraped company website summary.\n\nLEAD DETAILS:\n- Name: {{ $('Re organise and properly structure data -   Edit Fields').item.json.Customer_name }}\n- Email: {{ $('Re organise and properly structure data -   Edit Fields').item.json.Customer_email }}\n- Company:{{ $('Re organise and properly structure data -   Edit Fields').item.json.Customer_company }}\n- Website Context:{{ $json.company_summary || $json.clean_text || 'No website context' }}\n- Inquiry Message:{{ $('Re organise and properly structure data -   Edit Fields').item.json.Customer_message }}\n\nTASK:\nEvaluate this lead and score it using this scale:\n- 8 to 10: Hot (Urgent timeline, clear budget, high pain point)\n- 4 to 7: Medium/Warm (Exploring options for next quarter/year, valid business domain, information gathering)\n- 1 to 3: Low/Spam (Solicitation, SEO/crypto spam, or free email with vague/unrelated text)\n\nReturn ONLY a valid JSON object with NO markdown formatting, NO backticks, and NO extra commentary. Use this exact structure:\n{\n  \"qualification_score\": <integer from 1 to 10>,\n  \"buyer_intent\": \"<High | Medium | Low | Spam>\",\n  \"ai_summary\": \"<2-sentence summary combining what their company does and what they need>\",\n  \"pain_points\": \"<comma-separated list of key challenges mentioned>\",\n  \"draft_reply\": \"<A warm, concise, personalized email reply to {{ $('Re organise and properly structure data -   Edit Fields').item.json.Customer_name }} referencing their specific company business and inquiry>\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3952,
+        -1120
+      ],
+      "id": "8f6ce809-9411-40e6-afdf-c8cc9edd0bd2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openrouter/free",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        3952,
+        -928
+      ],
+      "id": "6b6a3762-8ad2-4d87-b447-72b0af0016e3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "wNyKLG3NAQh3FTCM",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Grab the raw HTML returned by the HTTP Request node\nconst responseData = $input.first().json;\nconst rawHtml = responseData.data || \"\";\n\n// 2. Strip out invisible code (<script>, <style>, comments, and HTML tags)\nlet cleanText = rawHtml\n  .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, ' ')\n  .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, ' ')\n  .replace(/<!--[\\s\\S]*?-->/g, ' ')\n  .replace(/<[^>]+>/g, ' ');\n\n// 3. Remove extra blank spaces and line breaks\ncleanText = cleanText.replace(/\\s+/g, ' ').trim();\n\n// 4. Keep only the first 1,500 characters\nconst companyContext = cleanText.substring(0, 1500);\n\n// 5. Grab the clean lead details directly from our first 'Code' node\nconst originalLead = $('Code in JavaScript - Clean up codes, extracts Json data').first().json;\n\n// 6. Grab the Airtable row ID from 'Create a record'\nconst airtableRecord = $('Database for incoming Leads - Create a record').first().json;\n\nreturn [\n  {\n    json: {\n      airtable_id: airtableRecord.id,\n      name: originalLead.name,\n      email: originalLead.email,\n      company: originalLead.company,\n      message: originalLead.message,\n      website_url: originalLead.website_url,\n      company_summary: companyContext || \"Website could not be read or had no text.\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3696,
+        -1120
+      ],
+      "id": "3b1b934c-47d8-432a-b215-fb3ea31bc146",
+      "name": "Clean website text before passing to Ai - Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// BRANCH-SAFE AI JSON PARSER & VALIDATOR (WORKS FOR BOTH BUSINESS & FREE EMAILS)\n// ============================================================================\nconst rawOutput = $input.first().json.output \n               || $input.first().json.text \n               || $input.first().json.message?.content \n               || \"\";\n\n// Safely grab the Airtable Record ID from the upstream Airtable Create node\n// (Adjust the node name inside $() if your first Airtable node is named differently)\nlet airtableRecordId = null;\ntry {\n  airtableRecordId = $('Create a record').first().json.id;\n} catch (e) {\n  airtableRecordId = $input.first().json.id || null;\n}\n\ntry {\n  // Strip any accidental markdown code fences (```json ... ```)\n  const cleanJsonString = rawOutput\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n  const parsed = JSON.parse(cleanJsonString);\n\n  return [\n    {\n      json: {\n        airtable_record_id: airtableRecordId,\n        qualification_score: Number(parsed.qualification_score ?? parsed.score ?? 0),\n        buyer_intent: parsed.buyer_intent || \"Low\",\n        company_summary: parsed.company_summary || \"No company website scraped (Personal/Free Email).\",\n        pain_points: Array.isArray(parsed.pain_points) \n          ? parsed.pain_points.join(\", \") \n          : (parsed.pain_points || \"None identified\"),\n        draft_reply: parsed.draft_reply || \"No reply drafted (Cold/Unqualified Lead).\",\n        ai_status: \"AI Processed\"\n      }\n    }\n  ];\n} catch (error) {\n  // Fallback if the LLM returned broken JSON\n  return [\n    {\n      json: {\n        airtable_record_id: airtableRecordId,\n        qualification_score: 0,\n        buyer_intent: \"Error\",\n        company_summary: \"AI JSON Parsing Failed\",\n        pain_points: \"Manual review required\",\n        draft_reply: \"\",\n        ai_status: \"Manual Review Required\",\n        error_details: error.message\n      }\n    }\n  ];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4320,
+        -1280
+      ],
+      "id": "33f25d52-44bf-44ab-8960-9970c951f9d1",
+      "name": "Parse & Validate AI JSON  - Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": true,
+            "id": "={{ $('Database for incoming Leads - Create a record').item.json.id }}",
+            "Customer_name": "={{ $json.name }}",
+            "Customer_email": "={{ $json.email }}",
+            "Customer_company": "={{ $json.company }}",
+            "Customer_message": "={{ $json.message }}",
+            "Company_website_url": "={{ $json.website_url }}",
+            "Company_domain_name": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Company_domain_name }}",
+            "Buyer Intent": "={{ $json.buyer_intent }}",
+            "Qualification Score": "={{ $json.qualification_score }}",
+            "Received_time": "={{ $('Database for incoming Leads - Create a record').item.json.fields.Received_time }}",
+            "AI Summary": "={{ $json.ai_summary }}",
+            "Pain Points": "={{ $json.pain_points }}",
+            "Draft Reply": "={{ $json.draft_reply }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        4352,
+        -992
+      ],
+      "id": "409e431d-aa9b-40fd-9be5-db779853a295",
+      "name": "Update record in database - Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fields['Qualification Score'] }}",
+                    "rightValue": 8,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    },
+                    "id": "a5b5bc81-5ce7-49ae-b54d-ea625268a993"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HOT LEAD (VALUE 8 - 10)"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d2eee762-66ad-4013-ab18-d4f0e091b763",
+                    "leftValue": "={{ $json.fields['Qualification Score'] }}",
+                    "rightValue": 4,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "WARM LEAD (VALUE 4 - 7)"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "COLD / SPAM LEAD"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        4624,
+        -1264
+      ],
+      "id": "ab0c1ab5-6342-4983-b228-6c11a92ca0ed",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C2VJLRCQ3",
+          "mode": "list",
+          "cachedResultName": "all-lasop-web-development"
+        },
+        "message": "=🔥 *New Hot Enterprise Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})*\n*Name:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})\n*Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }})\n*Pain Points:* {{ $json.fields['Pain Points'] }}\n*Client Inquiry:* \"{{ $json.fields['Customer_message'] }}\"\n*AI Summary:* {{ $json.fields['AI Summary'] }}\n\n*AI Proposed Draft Reply (Copy & tweak this when you click Review below):*\n```{{ $json.fields['Draft Reply'] }}```",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Sales Decision",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Approved for GM"
+                  },
+                  {
+                    "option": "Rejected"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Sales Edited Reply",
+              "fieldType": "textarea",
+              "placeholder": "Paste the draft from Slack and make any edits here (or leave blank to keep the AI draft as it is)"
+            },
+            {
+              "fieldLabel": "Notes for GM",
+              "fieldType": "textarea",
+              "placeholder": "Optional notes for the General Manager (e.g., pricing or timeline notes)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        5120,
+        -1584
+      ],
+      "id": "44fc0ca4-c06a-4b37-83e0-93097199992b",
+      "name": "Send message and wait for response",
+      "webhookId": "a0b2773a-12b5-4e44-a079-fbbaf4f6c47b",
+      "credentials": {
+        "slackApi": {
+          "id": "MfLiQf53hO1fOt0h",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "63886745-f940-41cb-b754-fa2aef033b38",
+              "leftValue": "={{ $json.data['Sales Decision'] }}",
+              "rightValue": "Approved for GM",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5440,
+        -1584
+      ],
+      "id": "f572c814-0e5f-4900-954e-82e463a79c3c",
+      "name": "Did Sales Approve? - If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": true,
+            "Status": "Pending GM Approval",
+            "id": "={{ $('Switch').item.json.id }}",
+            "Draft Reply": "={{ $('Switch').item.json.fields['Draft Reply'] }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                },
+                {
+                  "name": "Pending GM Approval",
+                  "value": "Pending GM Approval"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5824,
+        -1600
+      ],
+      "id": "c25423d5-a8bd-4d4a-8a71-801d7f355f52",
+      "name": "Update Status: Sales Approved - Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "kingsleypee@gmail.com",
+        "subject": "=Final GM Sign-Off Required: {{ $json.fields['Customer_company'] }} (Score: {{ $json.fields['Qualification Score'] }}/10)",
+        "message": "=<div style=\"font-family: poppins, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; color: #333;\">\n  <div style=\"background-color: #e6f4ea; color: #137333; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 20px;\">\n    ✅ Stage 1 Complete: Reviewed & Edited by Sales Team (Status: {{ $json.fields['Status'] }})\n  </div>\n\n  <h2 style=\"color: #1a73e8; margin-top: 0;\">Final GM Sign-Off: {{ $json.fields['Customer_company'] }}</h2>\n  <p>Hello General Manager,</p>\n  <p>The Sales Team has reviewed and approved this <strong>Hot Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})</strong> and is requesting your final review before the email is sent to the client.</p>\n\n  <p><strong>Lead:</strong> {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})</p>\n  <p><strong>Original Inquiry:</strong> <em>\"{{ $json.fields['Customer_message'] }}\"</em></p>\n  <p><strong>Sales Team Notes:</strong> <span style=\"color: #d93025; font-weight: bold;\">\"{{ $('Did Sales Approve? - If').item.json['Notes for GM'] || $('Did Sales Approve? - If').item.json.data?.['Notes for GM'] || 'No additional notes.' }}\"</span></p>\n\n  <div style=\"background-color: #f8f9fa; padding: 15px; border-left: 4px solid #1a73e8; margin: 20px 0;\">\n    <strong>Current Draft in CRM (Copy & tweak in the form below if needed, or leave blank to send as-is):</strong><br><br>\n    <div style=\"white-space: pre-wrap;\">{{ $json.fields['Draft Reply'] }}</div>\n  </div>\n</div>",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "GM Decision",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Approved - Send to Client"
+                  },
+                  {
+                    "option": "Rejected"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "GM Final Reply",
+              "fieldType": "textarea",
+              "placeholder": "Paste and edit the draft here if you want to make changes, OR leave blank to send the Sales Team's version above as it is"
+            },
+            {
+              "fieldLabel": "GM Notes",
+              "fieldType": "textarea",
+              "placeholder": "Optional internal note (e.g., reason for edit or rejection)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        5808,
+        -1344
+      ],
+      "id": "4af61ef0-3d20-46ce-8262-ce9e83f593cd",
+      "name": "Stage 2 - GM Review & Edit - Gmail",
+      "webhookId": "9b56afac-b170-4506-b4dc-2ec7ce990e1b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xx9eRqRhBaUzU2Jm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "634b8a70-fa6e-4975-a746-5151ac64dd5b",
+              "leftValue": "={{ $json.data['GM Decision'] }}",
+              "rightValue": "Approved - Send to Client",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6032,
+        -1152
+      ],
+      "id": "8716cfea-fe80-4c88-a009-089c78e4e6fe",
+      "name": "Did GM Approve? - If"
+    },
+    {
+      "parameters": {
+        "sendTo": "=kingsleypee@gmail.com",
+        "subject": "=Re: Your inquiry regarding {{ $('Update Status: Sales Approved - Airtable').item.json.fields['Customer_company'] }}",
+        "emailType": "text",
+        "message": "={{ $json.data?.['GM Final Reply'] || $json['GM Final Reply'] || $('Update Status: Sales Approved - Airtable').item.json.fields['Draft Reply'] }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        6224,
+        -1456
+      ],
+      "id": "f8624ada-b1f9-43b0-943d-f56e55611ef0",
+      "name": "Send Final Email to Client - Gmail",
+      "webhookId": "cbbbe9cc-3057-449a-b031-342f43c36ea5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xx9eRqRhBaUzU2Jm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": false,
+            "Status": "Replied and process Completed",
+            "Draft Reply": "={{ $('Did GM Approve? - If').item.json.data?.['GM Final Reply'] || $('Update Status: Sales Approved - Airtable').item.json.fields['Draft Reply'] }}",
+            "id": "={{ $('Update Status: Sales Approved - Airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                },
+                {
+                  "name": "Pending GM Approval",
+                  "value": "Pending GM Approval"
+                },
+                {
+                  "name": "Replied and process Completed",
+                  "value": "Replied and process Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        6416,
+        -1136
+      ],
+      "id": "da33f091-85cd-4ffb-9299-9b224fbfb376",
+      "name": "Update Status: Replied & Closed - airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": true,
+            "id": "={{ $('Switch').item.json.id }}",
+            "Status": "Rejected"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                },
+                {
+                  "name": "Pending GM Approval",
+                  "value": "Pending GM Approval"
+                },
+                {
+                  "name": "Replied and process Completed",
+                  "value": "Replied and process Completed"
+                },
+                {
+                  "name": "Rejected",
+                  "value": "Rejected"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5488,
+        -1264
+      ],
+      "id": "1c382929-d6ea-4e06-9a47-2b5fa2d3a0b5",
+      "name": "Update Status: Rejected - airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C2VJLRCQ3",
+          "mode": "list",
+          "cachedResultName": "all-lasop-web-development"
+        },
+        "text": "=🌤️ *New Warm Lead Logged in CRM (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})* *Lead:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }}) *Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }}) *AI Summary:* {{ $json.fields['AI Summary'] }} _No GM sign-off required. Assigned to standard sales nurture queue._",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        5088,
+        -1232
+      ],
+      "id": "5dd48184-2f8a-46db-a2e6-a0d2548e7ffc",
+      "name": "Slack: Notify Warm Lead",
+      "webhookId": "ebb34704-2b16-41e9-a0a1-5cf1364bfcea",
+      "credentials": {
+        "slackApi": {
+          "id": "MfLiQf53hO1fOt0h",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": true,
+            "id": "={{ $('Switch').item.json.id }}",
+            "Status": "Nurture Queue"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                },
+                {
+                  "name": "Pending GM Approval",
+                  "value": "Pending GM Approval"
+                },
+                {
+                  "name": "Replied and process Completed",
+                  "value": "Replied and process Completed"
+                },
+                {
+                  "name": "Rejected",
+                  "value": "Rejected"
+                },
+                {
+                  "name": "Nurture Queue",
+                  "value": "Nurture Queue"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5168,
+        -848
+      ],
+      "id": "51a4fc23-7660-4dae-93cc-5f2954054277",
+      "name": "Update Status: Warm Nurture",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appLzrHRNhCZ1q61Z",
+          "mode": "list",
+          "cachedResultName": "UTIVA AIRTABLE 1",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblf6kOyG3voLjvFR",
+          "mode": "list",
+          "cachedResultName": "Enterprise Lead Qualification N8N Database",
+          "cachedResultUrl": "https://airtable.com/appLzrHRNhCZ1q61Z/tblf6kOyG3voLjvFR"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_business_email": false,
+            "id": "={{ $json.id }}",
+            "Status": "Archived / Unqualified"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Customer_name",
+              "displayName": "Customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_email",
+              "displayName": "Customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_company",
+              "displayName": "Customer_company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer_message",
+              "displayName": "Customer_message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_domain_name",
+              "displayName": "Company_domain_name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "is_business_email",
+              "displayName": "is_business_email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company_website_url",
+              "displayName": "Company_website_url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Received_time",
+              "displayName": "Received_time",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualification Score",
+              "displayName": "Qualification Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Buyer Intent",
+              "displayName": "Buyer Intent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AI Summary",
+              "displayName": "AI Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pain Points",
+              "displayName": "Pain Points",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Draft Reply",
+              "displayName": "Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Waiting AI Review",
+                  "value": "Waiting AI Review"
+                },
+                {
+                  "name": "AI Processed",
+                  "value": "AI Processed"
+                },
+                {
+                  "name": "Manual Review Required",
+                  "value": "Manual Review Required"
+                },
+                {
+                  "name": "Pending GM Approval",
+                  "value": "Pending GM Approval"
+                },
+                {
+                  "name": "Replied and process Completed",
+                  "value": "Replied and process Completed"
+                },
+                {
+                  "name": "Rejected",
+                  "value": "Rejected"
+                },
+                {
+                  "name": "Nurture Queue",
+                  "value": "Nurture Queue"
+                },
+                {
+                  "name": "Archived / Unqualified",
+                  "value": "Archived / Unqualified"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        4752,
+        -880
+      ],
+      "id": "15021bac-4b5c-4ba9-8a5c-5d0e0d0a677f",
+      "name": "Update Status: Archived / Cold - airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5erGrlkbOjp4O9d1",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Tigger- leads submission - Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript - Clean up codes, extracts Json data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript - Clean up codes, extracts Json data": {
+      "main": [
+        [
+          {
+            "node": "Re organise and properly structure data -   Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re organise and properly structure data -   Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Database for incoming Leads - Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Database for incoming Leads - Create a record": {
+      "main": [
+        [
+          {
+            "node": "Check if it's business or personal email -  If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if it's business or personal email -  If": {
+      "main": [
+        [
+          {
+            "node": "Get information from company webpage - HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fallback if (No Website available) Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get information from company webpage - HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Clean website text before passing to Ai - Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fallback if (No Website available) Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate AI JSON  - Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean website text before passing to Ai - Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate AI JSON  - Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update record in database - Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record in database - Airtable": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack: Notify Warm Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status: Archived / Cold - airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "Did Sales Approve? - If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did Sales Approve? - If": {
+      "main": [
+        [
+          {
+            "node": "Update Status: Sales Approved - Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status: Rejected - airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status: Sales Approved - Airtable": {
+      "main": [
+        [
+          {
+            "node": "Stage 2 - GM Review & Edit - Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage 2 - GM Review & Edit - Gmail": {
+      "main": [
+        [
+          {
+            "node": "Did GM Approve? - If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Did GM Approve? - If": {
+      "main": [
+        [
+          {
+            "node": "Send Final Email to Client - Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status: Rejected - airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Final Email to Client - Gmail": {
+      "main": [
+        [
+          {
+            "node": "Update Status: Replied & Closed - airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack: Notify Warm Lead": {
+      "main": [
+        [
+          {
+            "node": "Update Status: Warm Nurture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a0f9b979-7285-402c-ace4-e9c3bda6a713",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4f58a5c441b59d2607ebf5639f61936fc6f77b210ddbd1c0dbf8805773d0ac6b"
+  },
+  "nodeGroups": [],
+  "id": "3oaL7n94fHc7QKsm",
+  "tags": []
+}
