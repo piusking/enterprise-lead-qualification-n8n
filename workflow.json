@@ -1,4 +1,5 @@
 {
+  "name": "Enterprise Lead Qualification Pipeline - Kingsley Pius",
   "nodes": [
     {
       "parameters": {
@@ -432,7 +433,7 @@
             {
               "id": "a6968c46-f791-473a-b9b9-119dd4dd98d2",
               "name": "company_summary",
-              "value": "Personal email address used — no company website scraped.",
+              "value": "Personal email address used â€” no company website scraped.",
               "type": "string"
             }
           ]
@@ -829,7 +830,7 @@
           "mode": "list",
           "cachedResultName": "all-lasop-web-development"
         },
-        "message": "=🔥 *New Hot Enterprise Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})*\n*Name:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})\n*Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }})\n*Pain Points:* {{ $json.fields['Pain Points'] }}\n*Client Inquiry:* \"{{ $json.fields['Customer_message'] }}\"\n*AI Summary:* {{ $json.fields['AI Summary'] }}\n\n*AI Proposed Draft Reply (Copy & tweak this when you click Review below):*\n```{{ $json.fields['Draft Reply'] }}```",
+        "message": "=ðŸ”¥ *New Hot Enterprise Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})*\n*Name:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})\n*Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }})\n*Pain Points:* {{ $json.fields['Pain Points'] }}\n*Client Inquiry:* \"{{ $json.fields['Customer_message'] }}\"\n*AI Summary:* {{ $json.fields['AI Summary'] }}\n\n*AI Proposed Draft Reply (Copy & tweak this when you click Review below):*\n```{{ $json.fields['Draft Reply'] }}```",
         "responseType": "customForm",
         "formFields": {
           "values": [
@@ -1148,7 +1149,7 @@
         "operation": "sendAndWait",
         "sendTo": "kingsleypee@gmail.com",
         "subject": "=Final GM Sign-Off Required: {{ $json.fields['Customer_company'] }} (Score: {{ $json.fields['Qualification Score'] }}/10)",
-        "message": "=<div style=\"font-family: poppins, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; color: #333;\">\n  <div style=\"background-color: #e6f4ea; color: #137333; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 20px;\">\n    ✅ Stage 1 Complete: Reviewed & Edited by Sales Team (Status: {{ $json.fields['Status'] }})\n  </div>\n\n  <h2 style=\"color: #1a73e8; margin-top: 0;\">Final GM Sign-Off: {{ $json.fields['Customer_company'] }}</h2>\n  <p>Hello General Manager,</p>\n  <p>The Sales Team has reviewed and approved this <strong>Hot Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})</strong> and is requesting your final review before the email is sent to the client.</p>\n\n  <p><strong>Lead:</strong> {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})</p>\n  <p><strong>Original Inquiry:</strong> <em>\"{{ $json.fields['Customer_message'] }}\"</em></p>\n  <p><strong>Sales Team Notes:</strong> <span style=\"color: #d93025; font-weight: bold;\">\"{{ $('Did Sales Approve? - If').item.json['Notes for GM'] || $('Did Sales Approve? - If').item.json.data?.['Notes for GM'] || 'No additional notes.' }}\"</span></p>\n\n  <div style=\"background-color: #f8f9fa; padding: 15px; border-left: 4px solid #1a73e8; margin: 20px 0;\">\n    <strong>Current Draft in CRM (Copy & tweak in the form below if needed, or leave blank to send as-is):</strong><br><br>\n    <div style=\"white-space: pre-wrap;\">{{ $json.fields['Draft Reply'] }}</div>\n  </div>\n</div>",
+        "message": "=<div style=\"font-family: poppins, sans-serif; max-width: 600px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; color: #333;\">\n  <div style=\"background-color: #e6f4ea; color: #137333; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 20px;\">\n    âœ… Stage 1 Complete: Reviewed & Edited by Sales Team (Status: {{ $json.fields['Status'] }})\n  </div>\n\n  <h2 style=\"color: #1a73e8; margin-top: 0;\">Final GM Sign-Off: {{ $json.fields['Customer_company'] }}</h2>\n  <p>Hello General Manager,</p>\n  <p>The Sales Team has reviewed and approved this <strong>Hot Lead (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})</strong> and is requesting your final review before the email is sent to the client.</p>\n\n  <p><strong>Lead:</strong> {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }})</p>\n  <p><strong>Original Inquiry:</strong> <em>\"{{ $json.fields['Customer_message'] }}\"</em></p>\n  <p><strong>Sales Team Notes:</strong> <span style=\"color: #d93025; font-weight: bold;\">\"{{ $('Did Sales Approve? - If').item.json['Notes for GM'] || $('Did Sales Approve? - If').item.json.data?.['Notes for GM'] || 'No additional notes.' }}\"</span></p>\n\n  <div style=\"background-color: #f8f9fa; padding: 15px; border-left: 4px solid #1a73e8; margin: 20px 0;\">\n    <strong>Current Draft in CRM (Copy & tweak in the form below if needed, or leave blank to send as-is):</strong><br><br>\n    <div style=\"white-space: pre-wrap;\">{{ $json.fields['Draft Reply'] }}</div>\n  </div>\n</div>",
         "responseType": "customForm",
         "formFields": {
           "values": [
@@ -1740,7 +1741,7 @@
           "mode": "list",
           "cachedResultName": "all-lasop-web-development"
         },
-        "text": "=🌤️ *New Warm Lead Logged in CRM (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})* *Lead:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }}) *Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }}) *AI Summary:* {{ $json.fields['AI Summary'] }} _No GM sign-off required. Assigned to standard sales nurture queue._",
+        "text": "=ðŸŒ¤ï¸ *New Warm Lead Logged in CRM (Score: {{ $json.fields['Qualification Score'] }}/10 | Intent: {{ $json.fields['Buyer Intent'] }})* *Lead:* {{ $json.fields['Customer_name'] }} ({{ $json.fields['Customer_email'] }}) *Company:* {{ $json.fields['Customer_company'] }} ({{ $json.fields['Company_website_url'] }}) *AI Summary:* {{ $json.fields['AI Summary'] }} _No GM sign-off required. Assigned to standard sales nurture queue._",
         "otherOptions": {}
       },
       "type": "n8n-nodes-base.slack",
@@ -2250,6 +2251,7 @@
       }
     }
   ],
+  "pinData": {},
   "connections": {
     "Tigger- leads submission - Webhook": {
       "main": [
@@ -2335,23 +2337,23 @@
         ]
       ]
     },
-    "Basic LLM Chain": {
-      "main": [
-        [
-          {
-            "node": "Parse & Validate AI JSON  - Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "OpenRouter Chat Model": {
       "ai_languageModel": [
         [
           {
             "node": "Basic LLM Chain",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate AI JSON  - Code in JavaScript",
+            "type": "main",
             "index": 0
           }
         ]
@@ -2507,9 +2509,17 @@
       ]
     }
   },
-  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5946da1c-ecf9-4593-92b7-e9c0d5cf408e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4f58a5c441b59d2607ebf5639f61936fc6f77b210ddbd1c0dbf8805773d0ac6b"
-  }
+  },
+  "nodeGroups": [],
+  "id": "3oaL7n94fHc7QKsm",
+  "tags": []
 }
