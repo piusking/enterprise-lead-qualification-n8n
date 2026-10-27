@@ -1,5 +1,4 @@
 {
-  "name": "Enterprise Lead Qualification Pipeline - Kingsley Pius",
   "nodes": [
     {
       "parameters": {
@@ -10,8 +9,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.2,
       "position": [
-        3072,
-        -1536
+        3088,
+        -1552
       ],
       "id": "df6be8a1-bb3c-4e38-b605-1ab46a9c15a5",
       "name": "Tigger- leads submission - Webhook",
@@ -24,8 +23,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2736,
-        -1168
+        2752,
+        -1184
       ],
       "id": "6571709d-0f48-410d-8bc7-efaeb3bd387f",
       "name": "Code in JavaScript - Clean up codes, extracts Json data"
@@ -95,8 +94,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        2960,
-        -1168
+        2976,
+        -1184
       ],
       "id": "68f59d0e-6401-4559-b5b3-3479211a039e",
       "name": "Re organise and properly structure data -   Edit Fields"
@@ -329,8 +328,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        3184,
-        -1168
+        3200,
+        -1184
       ],
       "id": "081cb6cd-4130-4a4c-8a65-b98ff3aedc3b",
       "name": "Database for incoming Leads - Create a record",
@@ -369,8 +368,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        3408,
-        -1168
+        3424,
+        -1184
       ],
       "id": "d67166cc-6063-4037-8337-9e11369d7c73",
       "name": "Check if it's business or personal email -  If"
@@ -389,8 +388,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        3952,
-        -1456
+        3968,
+        -1472
       ],
       "id": "18b875bb-b128-4b60-b6b4-9c37df7f3d37",
       "name": "Get information from company webpage - HTTP Request",
@@ -444,8 +443,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        3888,
-        -896
+        3904,
+        -912
       ],
       "id": "4dd357a4-be64-4238-aa8f-acd85d604a5d",
       "name": "Fallback if (No Website available) Edit Fields"
@@ -459,8 +458,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        4112,
-        -1152
+        4128,
+        -1168
       ],
       "id": "8f6ce809-9411-40e6-afdf-c8cc9edd0bd2",
       "name": "Basic LLM Chain"
@@ -475,8 +474,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        4112,
-        -960
+        4128,
+        -976
       ],
       "id": "6b6a3762-8ad2-4d87-b447-72b0af0016e3",
       "name": "OpenRouter Chat Model",
@@ -494,8 +493,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3856,
-        -1152
+        3872,
+        -1168
       ],
       "id": "3b1b934c-47d8-432a-b215-fb3ea31bc146",
       "name": "Clean website text before passing to Ai - Code in JavaScript"
@@ -507,8 +506,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4480,
-        -1312
+        4496,
+        -1328
       ],
       "id": "33f25d52-44bf-44ab-8960-9970c951f9d1",
       "name": "Parse & Validate AI JSON  - Code in JavaScript"
@@ -740,8 +739,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        4512,
-        -1024
+        4528,
+        -1040
       ],
       "id": "409e431d-aa9b-40fd-9be5-db779853a295",
       "name": "Update record in database - Airtable",
@@ -814,8 +813,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        4784,
-        -1296
+        4800,
+        -1312
       ],
       "id": "ab0c1ab5-6342-4983-b228-6c11a92ca0ed",
       "name": "Switch"
@@ -866,8 +865,8 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.7,
       "position": [
-        5280,
-        -1616
+        5296,
+        -1632
       ],
       "id": "44fc0ca4-c06a-4b37-83e0-93097199992b",
       "name": "Send message and wait for response",
@@ -906,8 +905,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        5600,
-        -1616
+        5616,
+        -1632
       ],
       "id": "f572c814-0e5f-4900-954e-82e463a79c3c",
       "name": "Did Sales Approve? - If"
@@ -1132,8 +1131,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        5984,
-        -1632
+        6000,
+        -1648
       ],
       "id": "c25423d5-a8bd-4d4a-8a71-801d7f355f52",
       "name": "Update Status: Sales Approved - Airtable",
@@ -1185,8 +1184,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        5968,
-        -1376
+        5984,
+        -1392
       ],
       "id": "4af61ef0-3d20-46ce-8262-ce9e83f593cd",
       "name": "Stage 2 - GM Review & Edit - Gmail",
@@ -1225,8 +1224,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        6192,
-        -1184
+        6208,
+        -1200
       ],
       "id": "8716cfea-fe80-4c88-a009-089c78e4e6fe",
       "name": "Did GM Approve? - If"
@@ -1244,8 +1243,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        6384,
-        -1488
+        6400,
+        -1504
       ],
       "id": "f8624ada-b1f9-43b0-943d-f56e55611ef0",
       "name": "Send Final Email to Client - Gmail",
@@ -1481,8 +1480,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        6576,
-        -1168
+        6592,
+        -1184
       ],
       "id": "da33f091-85cd-4ffb-9299-9b224fbfb376",
       "name": "Update Status: Replied & Closed - airtable",
@@ -1720,8 +1719,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        5648,
-        -1296
+        5664,
+        -1312
       ],
       "id": "1c382929-d6ea-4e06-9a47-2b5fa2d3a0b5",
       "name": "Update Status: Rejected - airtable",
@@ -1747,8 +1746,8 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.7,
       "position": [
-        5248,
-        -1264
+        5264,
+        -1280
       ],
       "id": "5dd48184-2f8a-46db-a2e6-a0d2548e7ffc",
       "name": "Slack: Notify Warm Lead",
@@ -1991,8 +1990,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        5328,
-        -880
+        5344,
+        -896
       ],
       "id": "51a4fc23-7660-4dae-93cc-5f2954054277",
       "name": "Update Status: Warm Nurture",
@@ -2238,8 +2237,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.2,
       "position": [
-        4912,
-        -912
+        4928,
+        -928
       ],
       "id": "15021bac-4b5c-4ba9-8a5c-5d0e0d0a677f",
       "name": "Update Status: Archived / Cold - airtable",
@@ -2251,7 +2250,6 @@
       }
     }
   ],
-  "pinData": {},
   "connections": {
     "Tigger- leads submission - Webhook": {
       "main": [
@@ -2337,23 +2335,23 @@
         ]
       ]
     },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Basic LLM Chain": {
       "main": [
         [
           {
             "node": "Parse & Validate AI JSON  - Code in JavaScript",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -2509,17 +2507,9 @@
       ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
-  },
-  "versionId": "386d8e63-a9a4-42a2-af0d-b475866ff542",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4f58a5c441b59d2607ebf5639f61936fc6f77b210ddbd1c0dbf8805773d0ac6b"
-  },
-  "nodeGroups": [],
-  "id": "3oaL7n94fHc7QKsm",
-  "tags": []
+  }
 }
